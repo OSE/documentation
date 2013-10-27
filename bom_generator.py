@@ -14,6 +14,7 @@ def main(argv):
         86, # top frame
         84, # overall machine
     ]
+    print "Processing %s guides..." % len(DOZUKI_GUIDE_IDS)
     BASE_URL = 'https://opensourceecology.dozuki.com/api/2.0/guides'
     for guide_id in DOZUKI_GUIDE_IDS:
         url = "%s/%s" % (BASE_URL, guide_id)
@@ -55,7 +56,7 @@ def process_part_line(parts, guide, step, line_text):
     count = float(match.group(1).strip())
     name = match.group(2).strip()
     logging.debug("%s %s" % (count, name))
-    add_part(parts, guide['title'], name, count)
+    add_part(parts, "%s, step %s" % (guide['title'], step['orderby']), name, count)
 
 
 def add_part(parts, used_by, name, count):
