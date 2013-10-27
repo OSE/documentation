@@ -74,7 +74,6 @@ def plural(num, text):
 
 
 def output_bom(parts):
-    # for part in sorted(parts.keys(), cmp=cmp_by_last_word):
     for part in sorted(parts.keys(), key=lambda x: x.split()[-1] + x):
         count = parts[part]['count']
         if float(round(count)) == count:
@@ -82,15 +81,6 @@ def output_bom(parts):
         print("Count: %s, Part: %s" % (count, part))
         for used_by in parts[part]['used_by']:
             print("    Used by: %s" % used_by)
-
-
-def cmp_by_first_word(a, b):
-    regex = '([^a-zA-Z]*)(.*)'
-    a_chunks = list(re.match(regex, a).groups())
-    a_chunks.reverse()
-    b_chunks = list(re.match(regex, b).groups())
-    b_chunks.reverse()
-    return ''.join(a_chunks) < ''.join(b_chunks)
 
 
 main(sys.argv)
