@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 import re
@@ -12,7 +13,8 @@ def main(argv):
     DOZUKI_GUIDE_IDS = [
         85, # bottom frame
         86, # top frame
-        84, # overall machine
+        87, # shear table
+        84, # assemble the pieces
     ]
     print "Processing %s guides..." % len(DOZUKI_GUIDE_IDS)
     BASE_URL = 'https://opensourceecology.dozuki.com/api/2.0/guides'
@@ -23,7 +25,12 @@ def main(argv):
 
 
 def process_url(parts, url):
-    json_str = urllib2.urlopen(url).read()
+    try:
+        json_str = urllib2.urlopen(url).read()
+    except urllib2.HTTPError:
+        logging.error("There was an error loading guide %s. Make sure it's public." % url)
+        raise
+
     guide = json.loads(json_str)
 
     logging.debug(json.dumps(guide, sort_keys=True, indent=4, separators=(',', ': ')))
@@ -75,6 +82,14 @@ def plural(num, text):
 
 
 def output_bom(parts):
+    print("\n\n<!--START OF GENERATED BOM. Copy from here until the end into the wiki.-->")
+    print("<pre>")
+    print("This BOM was generated from the dozuki guides on %s\n" % datetime.now())
+    print(
+        "WARNING: If you hand-edit this list, your changes will be lost when "
+        "the BOM is regenerated. If anything is wrong, you should update the "
+        "parts entries in dozuki, fix bom_generator.py, or make a note in a "
+        "section other than the generated list.\n")
     for part in sorted(parts.keys(), key=lambda x: x.split()[-1] + x):
         count = parts[part]['count']
         if float(round(count)) == count:
@@ -82,6 +97,8 @@ def output_bom(parts):
         print("Count: %s, Part: %s" % (count, part))
         for used_by in parts[part]['used_by']:
             print("    Used by: %s" % used_by)
+    print("</pre>")
+    print("<!--END OF GENERATED BOM.-->")
 
 
 main(sys.argv)
