@@ -16,7 +16,7 @@ def main(argv):
         87, # shear table
         84, # assemble the pieces
     ]
-    print "Processing %s guides..." % len(DOZUKI_GUIDE_IDS)
+    print("Processing %s guides..." % len(DOZUKI_GUIDE_IDS))
     BASE_URL = 'https://opensourceecology.dozuki.com/api/2.0/guides'
     for guide_id in DOZUKI_GUIDE_IDS:
         url = "%s/%s" % (BASE_URL, guide_id)
@@ -27,11 +27,16 @@ def main(argv):
 def process_url(parts, url):
     try:
         json_str = urllib2.urlopen(url).read()
-    except urllib2.HTTPError:
-        logging.error("There was an error loading guide %s. Make sure it's public." % url)
-        raise
+    except (urllib2.HTTPError, urllib2.URLError) as e:
+        logging.error("There was an error loading guide %s. Make sure"
+                      " it's public.\n(Got error: %s)" % (url, e))
+        sys.exit(1)
 
-    guide = json.loads(json_str)
+    try:
+        guide = json.loads(json_str)
+    except ValueError as e:
+        logging.error("Could not read content of guide %s: %s" % (url, e))
+        sys.exit(1)
 
     logging.debug(json.dumps(guide, sort_keys=True, indent=4, separators=(',', ': ')))
     logging.debug('----------------')
@@ -101,4 +106,5 @@ def output_bom(parts):
     print("<!--END OF GENERATED BOM.-->")
 
 
-main(sys.argv)
+if __name__ == "__main__":
+    main(sys.argv)
