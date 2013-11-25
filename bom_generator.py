@@ -76,9 +76,26 @@ def add_part(parts, used_by, name, count):
     parts[name]['used_by'].add(used_by)
 
 
-
 def plural(num, text):
-    return "%d %s%s" % (num, text, "s"[num==1:])
+    if text[-1:] == 's':
+        text = text[:-1]
+    suffix = 's'
+    if num==1 or text[-6:]=='grease' :  #if it ends in the word grease or there is only one
+        suffix = ''
+    return "%s%s" % (text, suffix)
+
+
+def make_parts_table(parts):
+    rval = ''
+    rval += "Count\t Part\n"
+    rval += "-----\t ----\n"
+    for part in sorted(parts.keys(), key=lambda x: x.split()[-1] + x):
+        count = parts[part]['count']
+        if float(round(count)) == count:
+            count = int(count)
+        part_name = plural(count,part)
+        rval += "" + '%5s' % format(str(count)) + "\t " + part_name + "\n"
+    return rval
 
 
 def output_bom(parts):
@@ -90,11 +107,15 @@ def output_bom(parts):
         "the BOM is regenerated. If anything is wrong, you should update the "
         "parts entries in dozuki, fix bom_generator.py, or make a note in a "
         "section other than the generated list.\n")
+    print('')
+    print(make_parts_table(parts))
+    print('')
     for part in sorted(parts.keys(), key=lambda x: x.split()[-1] + x):
         count = parts[part]['count']
         if float(round(count)) == count:
             count = int(count)
-        print("Count: %s, Part: %s" % (count, part))
+        part_name = plural(count,part)
+        print("Count: %s, Part: %s" % (count, part_name))
         for used_by in parts[part]['used_by']:
             print("    Used by: %s" % used_by)
     print("</pre>")
@@ -102,3 +123,4 @@ def output_bom(parts):
 
 
 main(sys.argv)
+
