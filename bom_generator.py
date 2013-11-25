@@ -93,7 +93,7 @@ def make_parts_table(parts):
         count = parts[part]['count']
         if float(round(count)) == count:
             count = int(count)
-        part_name = plural(count,part)
+        part_name = plural(count, part)
         rval += "" + '%5s' % format(str(count)) + "\t " + part_name + "\n"
     return rval
 
@@ -114,7 +114,7 @@ def output_bom(parts):
         count = parts[part]['count']
         if float(round(count)) == count:
             count = int(count)
-        part_name = plural(count,part)
+        part_name = plural(count, part)
         print("Count: %s, Part: %s" % (count, part_name))
         for used_by in parts[part]['used_by']:
             print("    Used by: %s" % used_by)
