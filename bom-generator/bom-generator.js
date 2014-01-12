@@ -13,23 +13,33 @@ function BomCtrl($scope, $http, $q, $log) {
 	}, deepWatch);
 
 	$scope.generate = function() {
-		// TODO make it use guide urls from text boxes instead of hardcoded list.
 		parts = {};
-		DOZUKI_GUIDE_IDS = [
-			85, // bottom frame
-			86, // top frame
-			87, // shear table
-			84, // assemble the pieces
-		];
-		$log.debug(sprintf("Processing %s guides...", DOZUKI_GUIDE_IDS.length));
-		BASE_URL = 'https://opensourceecology.dozuki.com/api/2.0/guides';
-		var promises = DOZUKI_GUIDE_IDS.map(function(guideId) {
-			url = sprintf("%s/%s", BASE_URL, guideId);
+
+		var guideIds = $scope.guides.filter(function(x) { return x.url.trim() !== ''; }).map(function(guideInput) {
+			return getGuideId(guideInput.url);
+		});
+		// DOZUKI_GUIDE_IDS = [
+		// 	85, // bottom frame
+		// 	86, // top frame
+		// 	87, // shear table
+		// 	84, // assemble the pieces
+		// ];
+
+		$log.debug(sprintf("Processing %s guides...", guideIds.length));
+		var promises = guideIds.map(function(id) {
+			url = 'https://opensourceecology.dozuki.com/api/2.0/guides/' + id;
 			return processUrl(parts, url);
 		});
 		$q.all(promises).then(function() {
 			outputBom(parts);
 		});
+	};
+
+	var getGuideId = function(url) {
+		// This hack seems like it may break one day.
+		var chunks = url.split('/');
+		$log.debug(chunks);
+		return chunks[chunks.length - 2];
 	};
 
 	var processUrl = function(parts, url) {
