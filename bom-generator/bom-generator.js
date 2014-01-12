@@ -18,14 +18,7 @@ function BomCtrl($scope, $http, $q, $log) {
 		var guideIds = $scope.guides.filter(function(x) { return x.url.trim() !== ''; }).map(function(guideInput) {
 			return getGuideId(guideInput.url);
 		});
-		// DOZUKI_GUIDE_IDS = [
-		// 	85, // bottom frame
-		// 	86, // top frame
-		// 	87, // shear table
-		// 	84, // assemble the pieces
-		// ];
-
-		$log.debug(sprintf("Processing %s guides...", guideIds.length));
+		$log.debug(sprintf("Extracted guide ids: %s", guideIds.join(', ')));
 		var promises = guideIds.map(function(id) {
 			url = 'https://opensourceecology.dozuki.com/api/2.0/guides/' + id;
 			return processUrl(parts, url);
@@ -38,7 +31,6 @@ function BomCtrl($scope, $http, $q, $log) {
 	var getGuideId = function(url) {
 		// This hack seems like it may break one day.
 		var chunks = url.split('/');
-		$log.debug(chunks);
 		return chunks[chunks.length - 2];
 	};
 
