@@ -1,10 +1,17 @@
 function BomCtrl($scope, $http, $q, $log) {
-	$scope.guides = [{}];
+	$scope.guides = [{url: ''}];
 	$scope.wikiMarkup = '';
 
-	// TODO make it add a blank url box if all are full.
-	// TODO make it remove blank url boxes if they're not the last in the list
- 
+	var deepWatch = true;
+	$scope.$watch('guides', function(newGuides, oldGuides) {
+		for (var i = newGuides.length - 1; i >= 0; i--) {
+			if (newGuides[i].url.trim() === '') {
+				newGuides.splice(i, 1);
+			}
+		}
+		newGuides.push({url: ''});
+	}, deepWatch);
+
 	$scope.generate = function() {
 		// TODO make it use guide urls from text boxes instead of hardcoded list.
 		parts = {};
