@@ -1,6 +1,7 @@
 function BomCtrl($scope, $http, $q, $log) {
 	$scope.guides = [{url: ''}];
 	$scope.wikiMarkup = '';
+	$scope.errors = [];
 
 	var deepWatch = true;
 	$scope.$watch('guides', function(newGuides, oldGuides) {
@@ -13,6 +14,8 @@ function BomCtrl($scope, $http, $q, $log) {
 	}, deepWatch);
 
 	$scope.generate = function() {
+		$scope.wikiMarkup = "Generating...";
+		$scope.errors = [];
 		parts = {};
 
 		var guideIds = $scope.guides.filter(function(x) { return x.url.trim() !== ''; }).map(function(guideInput) {
@@ -44,7 +47,7 @@ function BomCtrl($scope, $http, $q, $log) {
 					$log.debug(parts);
 		});
 		promise.error(function(data, status, headers, config) {
-			alert(sprintf("There was an error loading guide %s. Make sure it's public.\n(Status: %s)", url, status));
+			error(sprintf("There was an error loading guide %s. Make sure it's public.\n(Status: %s)", url, status));
 		});
 		return promise;
 	};
@@ -76,7 +79,7 @@ function BomCtrl($scope, $http, $q, $log) {
 		var regexp = /^([0-9.]+) ([^(]+)/m;
 		var match = regexp.exec(lineText);
 		if (match === null) {
-			alert(sprintf("Can't understand part line from '%s', step %s: '%s'", guide.title, step.orderby, lineText));
+			error(sprintf("Can't understand part line from '%s', step %s: '%s'", guide.title, step.orderby, lineText));
 			return;
 		}
 		var count = parseFloat(match[1].trim());
@@ -163,5 +166,10 @@ function BomCtrl($scope, $http, $q, $log) {
 			suffix = '';
 		}
 		return sprintf("%s%s", text, suffix);
+	};
+
+	var error = function(msg) {
+		$scope.errors.push(msg);
+		$log.error(msg);
 	};
 }

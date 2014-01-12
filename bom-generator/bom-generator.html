@@ -1,6 +1,12 @@
 <!doctype html>
 <html ng-app>
   <head>
+    <style>
+      .error {
+        color: red;
+        font-weight: bold;
+      }
+    </style>
     <script src="es5-shim-2.3.0.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.8/angular.min.js"></script>
     <script src="sprintf-0.7.js"></script>
@@ -19,6 +25,11 @@
       
       <hr>
       
+      <div ng-show="errors.length > 0">
+        <p ng-repeat="error in errors" class="error">{{error}}</p>
+        <hr>
+      </div>
+
       <pre>{{wikiMarkup}}</pre>
     </div>
   </body>
