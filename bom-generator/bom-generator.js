@@ -34,7 +34,7 @@ function BomCtrl($scope, $http, $q, $log) {
 	var getGuideId = function(url) {
 		// This hack seems like it may break one day.
 		var chunks = url.split('/');
-		return chunks[chunks.length - 2];
+		return chunks[chunks.length - 1];
 	};
 
 	var processUrl = function(parts, url) {
